@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Problem Tracker</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+            margin: 0;
+            padding: 0;
+        }
+        .light-mode {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        h1 {
+            margin: 20px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+        .streak-container {
+            display: flex;
+            justify-content: space-between;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        .dark-mode .streak-container {
+            background: #1e1e1e;
+        }
+        .streak-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 45%;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .streak-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .streak-progress {
+            height: 100%;
+            background: #2ecc71;
+            transition: width 0.3s ease-in-out;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+        .dark-mode table {
+            background: #1e1e1e;
+            color: #e0e0e0;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+        }
+        .dark-mode th {
+            background-color: #0056b3;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .toggle-mode {
+            background-color: #ff4757;
+        }
+        .toggle-mode:hover {
+            background-color: #d63031;
+        }
+    </style>
+</head>
+<body class="light-mode" onload="loadData()">
+    <div class="container">
+        <h1>DSA Problem Tracker</h1>
+        <div class="streak-container">
+            <div class="streak-box">Streak: <span id="streak">0</span>
+                <div class="streak-bar"><div id="streak-progress" class="streak-progress" style="width: 0%;"></div></div>
+            </div>
+            <div class="streak-box">Health: <span id="health">100%</span>
+                <div class="streak-bar"><div id="health-progress" class="streak-progress" style="width: 100%;"></div></div>
+            </div>
+        </div>
+        <button class="toggle-mode" onclick="toggleMode()">Toggle Dark Mode</button>
+        <table id="tracker">
+            <thead>
+                <tr>
+                    <th>✅</th>
+                    <th>Problem Name</th>
+                    <th>Solved On</th>
+                    <th>Repetition 1 (3 Days)</th>
+                    <th>Repetition 2 (7 Days)</th>
+                    <th>Repetition 3 (15 Days)</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <button onclick="addRow()">Add Problem</button>
+    </div>
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+
+        function addRow() {
+            let table = document.getElementById("tracker").getElementsByTagName('tbody')[0];
+            let row = table.insertRow();
+            
+            let checkboxCell = row.insertCell(0);
+            let problemCell = row.insertCell(1);
+            let solvedOnCell = row.insertCell(2);
+            let rep1Cell = row.insertCell(3);
+            let rep2Cell = row.insertCell(4);
+            let rep3Cell = row.insertCell(5);
+            
+            checkboxCell.innerHTML = '<input type="checkbox">';
+            problemCell.innerHTML = '<input type="text" placeholder="Problem Name">';
+            solvedOnCell.innerHTML = '<input type="date" onchange="updateRepetitions(this, this.parentElement.parentElement)">';
+            rep1Cell.innerHTML = '—';
+            rep2Cell.innerHTML = '—';
+            rep3Cell.innerHTML = '—';
+        }
+
+        function updateRepetitions(input, row) {
+            let solvedDate = new Date(input.value);
+            if (!input.value) return;
+            
+            let rep1 = new Date(solvedDate);
+            let rep2 = new Date(solvedDate);
+            let rep3 = new Date(solvedDate);
+            
+            rep1.setDate(rep1.getDate() + 3);
+            rep2.setDate(rep2.getDate() + 7);
+            rep3.setDate(rep3.getDate() + 15);
+            
+            row.cells[3].innerText = rep1.toISOString().split('T')[0];
+            row.cells[4].innerText = rep2.toISOString().split('T')[0];
+            row.cells[5].innerText = rep3.toISOString().split('T')[0];
+        }
+    </script>
+</body>
+</html>
