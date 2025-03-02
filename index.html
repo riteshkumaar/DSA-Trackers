@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSA Problem Tracker</title>
+    <title>DSA Tracker</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             text-align: center;
-            transition: background-color 0.3s, color 0.3s;
             margin: 0;
             padding: 0;
+            transition: background-color 0.3s, color 0.3s;
         }
         .light-mode {
-            background-color: #f8f9fa;
-            color: #212529;
+            background-color: #f5f5f5;
+            color: #333;
         }
         .dark-mode {
-            background-color: #121212;
+            background-color: #2a2a2a;
             color: #e0e0e0;
         }
         h1 {
@@ -31,52 +31,15 @@
             margin: auto;
             padding: 20px;
         }
-        .streak-container {
-            display: flex;
-            justify-content: space-between;
-            background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            transition: background 0.3s;
-        }
-        .dark-mode .streak-container {
-            background: #1e1e1e;
-        }
-        .streak-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 45%;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        .streak-bar {
-            width: 100%;
-            height: 10px;
-            background: #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 5px;
-        }
-        .streak-progress {
-            height: 100%;
-            background: #2ecc71;
-            transition: width 0.3s ease-in-out;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
             background: white;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             overflow: hidden;
-            transition: background-color 0.3s;
         }
         .dark-mode table {
-            background: #1e1e1e;
-            color: #e0e0e0;
+            background: #3a3a3a;
         }
         th, td {
             padding: 12px;
@@ -84,12 +47,11 @@
             text-align: center;
         }
         th {
-            background-color: #007bff;
+            background-color: #ffcc00;
             color: white;
-            font-weight: 600;
         }
         .dark-mode th {
-            background-color: #0056b3;
+            background-color: #cc9900;
         }
         input, button {
             padding: 10px;
@@ -97,67 +59,51 @@
             border-radius: 5px;
             border: none;
         }
+        input[type="text"] {
+            font-weight: bold;
+            font-size: 16px;
+        }
         button {
-            background-color: #007bff;
+            background-color: #4a90e2;
             color: white;
-            font-weight: 600;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #0056b3;
-        }
         .toggle-mode {
-            background-color: #ff4757;
+            background-color: #ff6b6b;
         }
-        .toggle-mode:hover {
-            background-color: #d63031;
+        .completed {
+            background-color: #a5d6a7 !important;
+        }
+        .streak {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffcc00;
         }
     </style>
 </head>
-<body onload="loadTheme(); loadData();">
+<body class="light-mode" onload="loadData()">
     <div class="container">
         <h1>DSA Problem Tracker</h1>
-        <div class="streak-container">
-            <div class="streak-box">Streak: <span id="streak">0</span>
-                <div class="streak-bar"><div id="streak-progress" class="streak-progress" style="width: 0%;"></div></div>
-            </div>
-            <div class="streak-box">Health: <span id="health">100%</span>
-                <div class="streak-bar"><div id="health-progress" class="streak-progress" style="width: 100%;"></div></div>
-            </div>
-        </div>
+        <div class="streak">🔥 Streak: <span id="streak">0</span></div>
         <button class="toggle-mode" onclick="toggleMode()">Toggle Dark Mode</button>
         <table id="tracker">
             <thead>
                 <tr>
                     <th>✅</th>
                     <th>Problem Name</th>
-                    <th>Solved On</th>
-                    <th>Repetition 1 (3 Days)</th>
-                    <th>Repetition 2 (7 Days)</th>
-                    <th>Repetition 3 (15 Days)</th>
+                    <th>Date Done</th>
+                    <th>Revisit (3 Days)</th>
+                    <th>Revisit (7 Days)</th>
+                    <th>Revisit (15 Days)</th>
                 </tr>
             </thead>
-            <tbody>
-            </tbody>
+            <tbody></tbody>
         </table>
         <button onclick="addRow()">Add Problem</button>
     </div>
-
     <script>
         function toggleMode() {
-            let body = document.body;
-            body.classList.toggle("dark-mode");
-
-            // Save mode to local storage
-            let mode = body.classList.contains("dark-mode") ? "dark" : "light";
-            localStorage.setItem("theme", mode);
-        }
-
-        function loadTheme() {
-            let savedTheme = localStorage.getItem("theme");
-            if (savedTheme === "dark") {
-                document.body.classList.add("dark-mode");
-            }
+            document.body.classList.toggle("dark-mode");
         }
 
         function addRow() {
@@ -171,12 +117,12 @@
             let rep2Cell = row.insertCell(4);
             let rep3Cell = row.insertCell(5);
             
-            checkboxCell.innerHTML = '<input type="checkbox">';
+            checkboxCell.innerHTML = '<input type="checkbox" onchange="checkCompletion(this)">';
             problemCell.innerHTML = '<input type="text" placeholder="Problem Name">';
             solvedOnCell.innerHTML = '<input type="date" onchange="updateRepetitions(this, this.parentElement.parentElement)">';
-            rep1Cell.innerHTML = '—';
-            rep2Cell.innerHTML = '—';
-            rep3Cell.innerHTML = '—';
+            rep1Cell.innerHTML = '<span>-</span>';
+            rep2Cell.innerHTML = '<span>-</span>';
+            rep3Cell.innerHTML = '<span>-</span>';
         }
 
         function updateRepetitions(input, row) {
@@ -191,9 +137,28 @@
             rep2.setDate(rep2.getDate() + 7);
             rep3.setDate(rep3.getDate() + 15);
             
-            row.cells[3].innerText = rep1.toISOString().split('T')[0];
-            row.cells[4].innerText = rep2.toISOString().split('T')[0];
-            row.cells[5].innerText = rep3.toISOString().split('T')[0];
+            row.cells[3].innerHTML = rep1.toISOString().split('T')[0];
+            row.cells[4].innerHTML = rep2.toISOString().split('T')[0];
+            row.cells[5].innerHTML = rep3.toISOString().split('T')[0];
+        }
+
+        function checkCompletion(checkbox) {
+            let row = checkbox.parentElement.parentElement;
+            let checkboxes = row.querySelectorAll("input[type='checkbox']");
+            let allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            if (allChecked) {
+                row.classList.add("completed");
+                updateStreak();
+            } else {
+                row.classList.remove("completed");
+            }
+        }
+
+        function updateStreak() {
+            let streakElement = document.getElementById("streak");
+            let currentStreak = parseInt(streakElement.innerText);
+            streakElement.innerText = currentStreak + 1;
         }
     </script>
 </body>
